@@ -11,45 +11,38 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GhostController implements HuskyClass {
 	
-	private final int SWITCH_DROP_DISTANCE = 1000;
-	private final int SCALE_DROP_DISTANCE = 0;
-	
 	private ArrayList<AutoTask> taskList = new ArrayList<AutoTask>();
 	
 	private int counter;
-	private double mapTargX;
-	private double mapTargY;
-	private double oldTargX;
-	private double oldTargY;
-	private int mapUpdate;
 	
 	private double[] chassisInfo;
 	
-	private double[] clawInfo;
 	private double[] posInfo;
 	private double[] teleTargPos;	//experemental
-	private double teleTargAngle;
 	
-	private double[] targPoint = {-1, -1};
-	private double oldTime = -1;
+	private int taskIteration = -1;
 	
 	private Chassis chassis;
 	private PositionTracker tracker;
 	
 	private HuskyJoy driveJoy;
 	private HuskyJoy weaponsJoy;
-	
-	private SendableChooser<String> firstAutoChooser = new SendableChooser<>();
-	private SendableChooser<String> secondAutoChooser = new SendableChooser<>();
-	private SendableChooser<Boolean> twoCubeChooser = new SendableChooser<>();
+
 	private Timer timer = new Timer();
 
-	public GhostController(Chassis Ch, Arm A, Claw Cl, ArmExtender AA, Winch W, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
+	
+	CheatCommand[] customCommands = {new CheatCommand()};
+	
+	
+	CheatCommand c = new CheatCommand(new Command());
+	
+	public GhostController(Chassis Ch, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
 
 		tracker = T;
@@ -59,31 +52,9 @@ public class GhostController implements HuskyClass {
 		
 	}
 	
-	public void dashInit() {
-		firstAutoChooser.addDefault("Switch inside", "sw_in");
-		firstAutoChooser.addObject("Switch outside (not center)", "sw_out");
-		firstAutoChooser.addObject("Scale outside", "sc_out");
-		firstAutoChooser.addObject("Auto run", "auto_run");
-		SmartDashboard.putData("First auto", firstAutoChooser);
-		
-		secondAutoChooser.addDefault("Switch inside", "sw_in");
-		secondAutoChooser.addObject("Switch outside (not center)", "sw_out");
-		secondAutoChooser.addObject("Scale outside", "sc_out");
-		secondAutoChooser.addObject("Auto run", "auto_run");
-		SmartDashboard.putData("Second auto", secondAutoChooser);
-		
-		twoCubeChooser.addDefault("No", false);
-		twoCubeChooser.addDefault("Yes", true);
-		SmartDashboard.putData("Do a two cube auto?", twoCubeChooser);
-		
-	}
 	
 	@Override
 	public void teleopInit() {
-		teleTargPos = new double[] {0, 0};
-		teleTargAngle = 0;
-		
-		
 
 	}
 
@@ -91,8 +62,7 @@ public class GhostController implements HuskyClass {
 	public void doTeleop() {
 		
 		posInfo = tracker.getInfo();
-		
-		SmartDashboard.putNumber("sonar inch", posInfo[3]);
+
 		
 			//normal drive (slider)
 //		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
@@ -168,14 +138,9 @@ public class GhostController implements HuskyClass {
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
+		
 		counter = 0;
-		targPoint[0] = -1.0d;
-		targPoint[1] = -1.0d;
-		mapUpdate = 0;
-		oldTargX = 0;
-		oldTargY = 0;
-		oldTime = -1.0;
-		SmartDashboard.putNumber("mapUpdate", mapUpdate);
+		taskIteration = 0;
 		timer.reset();
 		timer.start();
 
@@ -218,9 +183,14 @@ public class GhostController implements HuskyClass {
 			switch(taskList.get(counter).getType()){
 			
 			case easyPath:
-				if(driveEasyPath(taskList.get(counter).getInfo())) {
+				if(driveEasyPath(customCommands[(int) taskList.get(counter).getInfo()[0]])) {
 					counter++;
+					taskIteration = 0;
 				}
+				break;
+			
+			case stop:
+				chassis.giveInfo(new double[] {0, 0});
 				break;
 			
 			default:
@@ -228,6 +198,8 @@ public class GhostController implements HuskyClass {
 				break;
 				
 			}
+			
+			taskIteration++;
 		}
 //		*/
 		
@@ -236,8 +208,13 @@ public class GhostController implements HuskyClass {
 	}
 
 
-	private boolean driveEasyPath(double[] info) {
-		// TODO Auto-generated method stub
+	private boolean driveEasyPath(CheatCommand command) {
+		
+		if (taskIteration < 1) {
+			command.initialize();
+		}
+		
+		
 		return false;
 	}
 
