@@ -1,18 +1,11 @@
 package org.usfirst.frc.team6844.robot;
 
-import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Iterator;
 
-
-
+import easypath.FollowPath;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GhostController implements HuskyClass {
@@ -37,10 +30,9 @@ public class GhostController implements HuskyClass {
 	private Timer timer = new Timer();
 
 	
-	CheatCommand[] customCommands = {new CheatCommand()};
+	CheatFollowPath[] customCommands = {new CheatFollowPath(null, 0.7)};
 	
 	
-	CheatCommand c = new CheatCommand(new Command());
 	
 	public GhostController(Chassis Ch, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
@@ -140,7 +132,7 @@ public class GhostController implements HuskyClass {
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
 		
 		counter = 0;
-		taskIteration = 0;
+		taskIteration = -1;
 		timer.reset();
 		timer.start();
 
@@ -180,26 +172,30 @@ public class GhostController implements HuskyClass {
 			
 			SmartDashboard.putNumber("auto item #", counter);
 			
+			taskIteration++;
+			
 			switch(taskList.get(counter).getType()){
 			
 			case easyPath:
 				if(driveEasyPath(customCommands[(int) taskList.get(counter).getInfo()[0]])) {
 					counter++;
-					taskIteration = 0;
+					taskIteration = -1;
 				}
 				break;
 			
 			case stop:
 				chassis.giveInfo(new double[] {0, 0});
+				taskIteration = -1;
 				break;
 			
 			default:
 				chassis.giveInfo(new double[] {0, 0});
+				taskIteration = -1;
 				break;
 				
 			}
 			
-			taskIteration++;
+			
 		}
 //		*/
 		
@@ -208,14 +204,23 @@ public class GhostController implements HuskyClass {
 	}
 
 
-	private boolean driveEasyPath(CheatCommand command) {
+	private boolean driveEasyPath(CheatFollowPath command) {
 		
 		if (taskIteration < 1) {
-			command.initialize();
+			command.initialize();;
+		}
+		else {
+			command.execute();
 		}
 		
+		if (command.isFinished()) {
+			command.end();
+			return true;
+		}
+		else {
+			return false;
+		}
 		
-		return false;
 	}
 
 	
