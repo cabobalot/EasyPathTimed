@@ -9,11 +9,9 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 	
 	private final static int RIGHT_DRIVE_PORT = 8;
 	private final static int LEFT_DRIVE_PORT = 9;
-	private final int SONAR_PORT = 0;
 	private final double TURN_GAIN = 0.9;
 	private final double DRIVE_GAIN = 1;
-	
-	private AnalogSonar sonar = new AnalogSonar(SONAR_PORT);
+
 	
 	private double[] info = {0, 0};
 	private double[] oldOut;
