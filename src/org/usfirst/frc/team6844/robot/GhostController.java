@@ -2,7 +2,9 @@ package org.usfirst.frc.team6844.robot;
 
 import java.util.ArrayList;
 
+import easypath.EasyPath;
 import easypath.EasyPathConfig;
+import easypath.PathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -21,11 +23,8 @@ public class GhostController implements HuskyClass {
 	
 	private int taskIteration = -1;
 	
-	private Chassis chassis;
 	
-	private HuskyJoy driveJoy;
-	private HuskyJoy weaponsJoy;
-
+	
 	private Timer timer = new Timer();
 	
 	private Drivetrain dt = new Drivetrain();
@@ -40,17 +39,24 @@ public class GhostController implements HuskyClass {
 	        0.07 // kP value for P loop
 	    );
 	
+	// This drives 36 inches in a straight line, driving at 25% speed the first 50% of the path,
+    // and 75% speed in the remainder.
+    // x is the percentage completion of the path, between 0 and 1.
+	CheatFollowPath m_autonomousCommand = new CheatFollowPath(
+	        PathUtil.createStraightPath(36.0), x -> {
+	          if (x < 0.5) return 0.25;
+	          else return 0.75;
+	        });
+	
+	CheatFollowPath[] customCommands = {m_autonomousCommand};
 	
 	
-	CheatFollowPath[] customCommands = {new CheatFollowPath(null, 0.4)};
 	
-	
-	
-	public GhostController(Chassis Ch,  HuskyJoy DJ, HuskyJoy WJ) {
-		chassis = Ch;
+	public GhostController() {
 
-		driveJoy = DJ;
-		weaponsJoy = WJ;
+		
+		EasyPath.configure(config);
+		
 		
 		
 	}
@@ -192,12 +198,12 @@ public class GhostController implements HuskyClass {
 				break;
 			
 			case stop:
-				chassis.giveInfo(new double[] {0, 0});
+				dt.setLeftRightSpeeds(0, 0);
 				taskIteration = -1;
 				break;
 			
 			default:
-				chassis.giveInfo(new double[] {0, 0});
+				dt.setLeftRightSpeeds(0, 0);
 				taskIteration = -1;
 				break;
 				

@@ -4,7 +4,6 @@ import java.util.function.Function;
 
 import easypath.FollowPath;
 import easypath.Path;
-import edu.wpi.first.wpilibj.command.Command;
 
 
 public class CheatFollowPath extends FollowPath {

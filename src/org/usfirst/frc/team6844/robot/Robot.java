@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-	GhostController marcus = new GhostController(null, null, null);
+	GhostController marcus = new GhostController();
 
 	/**
 	 * This function is run when the robot is first started up and should be
