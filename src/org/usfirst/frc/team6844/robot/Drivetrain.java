@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drivetrain extends Subsystem {
 
@@ -17,6 +18,8 @@ public class Drivetrain extends Subsystem {
 	public static final double DISTANCE_PER_PULSE = 1 / TICKS_PER_INCH;
 
 	private boolean reversed = false;
+	
+	private int resets = 0;
 
 	public Drivetrain() {
 		super();
@@ -26,12 +29,14 @@ public class Drivetrain extends Subsystem {
 		sparkRight1 = new Spark(2);
 		sparkRight2 = new Spark(3);
 
+		/*
 		sparkLeft1.setInverted(true);
 		sparkLeft2.setInverted(true);
+		*/
 
 		gyro = new ADXRS450_Gyro(Port.kOnboardCS0);
 
-		encoderLeft = new Encoder(2, 3);
+		encoderLeft = new Encoder(6, 7);
 		encoderRight = new Encoder(4, 5);
 
 		encoderLeft.setDistancePerPulse(DISTANCE_PER_PULSE);
@@ -39,11 +44,11 @@ public class Drivetrain extends Subsystem {
 	}
 
 	public void setLeftRightSpeeds(double left, double right) {
-		sparkLeft1.set(left);
-		sparkLeft2.set(left);
+		sparkLeft1.set(-left);
+		sparkLeft2.set(-left);
 
-		sparkRight1.set(right);
-		sparkRight2.set(right);
+		sparkRight1.set(-right);
+		sparkRight2.set(-right);
 	}
 	
 	public double getTotalDistance() {
@@ -53,6 +58,8 @@ public class Drivetrain extends Subsystem {
 	public void reset() {
 		resetEncoders();
 		resetGyro();
+		resets++;
+		SmartDashboard.putNumber("has reset", resets);
 	}
 	
 	public void resetGyro() {

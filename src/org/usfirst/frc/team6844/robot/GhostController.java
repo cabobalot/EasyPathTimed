@@ -32,32 +32,31 @@ public class GhostController implements HuskyClass {
 	EasyPathConfig config = new EasyPathConfig(
 	        dt, // the subsystem itself
 	        dt::setLeftRightSpeeds, // function to set left/right speeds
-	        // function to give EasyPath the length driven
-	        dt::getTotalDistance,
+	        dt::getTotalDistance, // function to give EasyPath the length driven
 	        dt::getHeading, // function to give EasyPath the heading of your robot
 	        dt::reset, // function to reset your encoders to 0
 	        0.07 // kP value for P loop
 	    );
 	
-	// This drives 36 inches in a straight line, driving at 25% speed the first 50% of the path,
-    // and 75% speed in the remainder.
-    // x is the percentage completion of the path, between 0 and 1.
-	CheatFollowPath m_autonomousCommand = new CheatFollowPath(
-	        PathUtil.createStraightPath(36.0), x -> {
-	          if (x < 0.5) return 0.25;
-	          else return 0.75;
-	        });
 	
-	CheatFollowPath[] customCommands = {m_autonomousCommand};
-	
+	CheatFollowPath[] customCommands = {null, null};
 	
 	
 	public GhostController() {
-
-		
 		EasyPath.configure(config);
 		
 		
+		// This drives 36 inches in a straight line, driving at 25% speed the first 50% of the path,
+	    // and 75% speed in the remainder.
+	    // x is the percentage completion of the path, between 0 and 1.
+		CheatFollowPath linePath = new CheatFollowPath(
+		        PathUtil.createStraightPath(36.0), x -> {
+		          if (x < 0.5) return 0.25;
+		          else return 0.75;
+		        });
+		
+		customCommands[0] = linePath;
+		customCommands[1] = linePath;
 		
 	}
 	
@@ -139,16 +138,20 @@ public class GhostController implements HuskyClass {
 		
 		
 		taskList.add(new AutoTask(TaskType.easyPath, new double[] {0}));
-		
+		taskList.add(new AutoTask(TaskType.easyPath, new double[] {1}));
 		
 		
 		
 		taskList.add(new AutoTask(TaskType.stop, new double[] {0}));
 		
+//		dt.reset();
+		customCommands[0].initialize();
+		
 		counter = 0;
 		taskIteration = -1;
 		timer.reset();
 		timer.start();
+		
 
 	}
 
@@ -180,11 +183,20 @@ public class GhostController implements HuskyClass {
 //		driveTo(new double[] {13, 6.5}, false);
 //		SmartDashboard.putBoolean("at targ?", pointAt(45));
 		
-//		/*				//main stuff
+		
+		dt.setLeftRightSpeeds(0.5, 0.5);
+		
+		customCommands[0].initialize();
+		
+		SmartDashboard.putNumber("auto item #", counter);
+		SmartDashboard.putNumber("Task Iteration", taskIteration);
+		
+		/*				//main stuff
 		
 		if(counter < taskList.size()) {
 			
 			SmartDashboard.putNumber("auto item #", counter);
+			SmartDashboard.putNumber("Task Iteration", taskIteration);
 			
 			taskIteration++;
 			
@@ -221,7 +233,7 @@ public class GhostController implements HuskyClass {
 	private boolean driveEasyPath(CheatFollowPath command) {
 		
 		if (taskIteration < 1) {
-			command.initialize();;
+			command.initialize();
 		}
 		else {
 			command.execute();
