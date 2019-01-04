@@ -73,7 +73,6 @@ public class Chassis extends DifferentialDrive implements HuskyClass {
 		
 		
 		SmartDashboard.putNumber("joystick axis one:", joy.getRawAxis(1));
-		SmartDashboard.putNumber("in: ",sonar.getInches());
 	}
 	
 	private double slewLimit(double in, double old, double slewMax){

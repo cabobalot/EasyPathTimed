@@ -22,22 +22,20 @@ public class GhostController implements HuskyClass {
 	private int taskIteration = -1;
 	
 	private Chassis chassis;
-	private PositionTracker tracker;
 	
 	private HuskyJoy driveJoy;
 	private HuskyJoy weaponsJoy;
 
 	private Timer timer = new Timer();
-
-	
-	CheatFollowPath[] customCommands = {new CheatFollowPath(null, 0.7)};
 	
 	
+	CheatFollowPath[] customCommands = {new CheatFollowPath(null, 0.4)};
 	
-	public GhostController(Chassis Ch, PositionTracker T,  HuskyJoy DJ, HuskyJoy WJ) {
+	
+	
+	public GhostController(Chassis Ch,  HuskyJoy DJ, HuskyJoy WJ) {
 		chassis = Ch;
 
-		tracker = T;
 		driveJoy = DJ;
 		weaponsJoy = WJ;
 		
@@ -52,9 +50,6 @@ public class GhostController implements HuskyClass {
 
 	@Override
 	public void doTeleop() {
-		
-		posInfo = tracker.getInfo();
-
 		
 			//normal drive (slider)
 //		chassis.giveInfo(new double[] {-driveJoy.getSliderScaled(1), driveJoy.getSliderScaled(2)});
