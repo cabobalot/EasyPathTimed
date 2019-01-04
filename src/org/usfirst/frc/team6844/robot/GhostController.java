@@ -2,7 +2,7 @@ package org.usfirst.frc.team6844.robot;
 
 import java.util.ArrayList;
 
-import easypath.FollowPath;
+import easypath.EasyPathConfig;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
@@ -27,6 +27,19 @@ public class GhostController implements HuskyClass {
 	private HuskyJoy weaponsJoy;
 
 	private Timer timer = new Timer();
+	
+	private Drivetrain dt = new Drivetrain();
+	
+	EasyPathConfig config = new EasyPathConfig(
+	        dt, // the subsystem itself
+	        dt::setLeftRightSpeeds, // function to set left/right speeds
+	        // function to give EasyPath the length driven
+	        dt::getTotalDistance,
+	        dt::getHeading, // function to give EasyPath the heading of your robot
+	        dt::reset, // function to reset your encoders to 0
+	        0.07 // kP value for P loop
+	    );
+	
 	
 	
 	CheatFollowPath[] customCommands = {new CheatFollowPath(null, 0.4)};
