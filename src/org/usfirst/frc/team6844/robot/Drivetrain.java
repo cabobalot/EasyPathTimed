@@ -56,8 +56,11 @@ public class Drivetrain extends Subsystem {
 	}
 	
 	public void reset() {
+		System.out.println("will reset");
 		resetEncoders();
+		System.out.println("reset encoders");
 		resetGyro();
+		System.out.println("reset gyro");
 		resets++;
 		SmartDashboard.putNumber("has reset", resets);
 	}

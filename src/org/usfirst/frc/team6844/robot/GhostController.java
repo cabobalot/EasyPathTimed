@@ -146,6 +146,8 @@ public class GhostController implements HuskyClass {
 		
 //		dt.reset();
 		customCommands[0].initialize();
+//		Runnable foo = (dt::reset);
+//		foo.run();
 		
 		counter = 0;
 		taskIteration = -1;
